@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>YUki - A melhor tabela verdade do mundo</title>
+
+        <style>
+            /* Estilos para a tabela verdade */
+            *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'segoe UI', sans-serif;
+        }
+            body {
+                overflow: hidden; 
+                background: radial-gradient(circle at center, #0f172a, #020617);
+                color: #fff;
+            }
+            /* particulas background */
+            canvas {
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 0;
+            
+            }
+            /*Login */
+            .login-container {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 2;
+            }
+            /*Glass */
+            .login-inbox {
+                backdrop-filter: blur(20px);
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                padding: 40px;
+                border-radius: 20px;
+                width: 32px;
+                text-align: center;
+                transition: 0.4s;
+            }
+            .login-inbox:hover {
+                transform: scale(1.02);
+            }
+            /* Inputs */
+            .input-groups label {
+                position: relative;
+                margin: 20px 0;
+            }
+            .input-group input {
+                width: 100%;
+                padding: 10px;
+                background: transparent;
+                border: none;
+                border-bottom: 2px solid #555;
+                color: #fff;
+                transition: 0.3s;
+            }
+
+            .input-group label {
+                position:absolute;
+                top: 10px;
+                left: 0;
+                font-size: 14px;
+                color: #aaa;
+                transition: 0.3s;
+            }
+
+            .input-group input:focus + label,
+            .input-group input:valid + label {
+                top: 10px;
+                font-size: 10px;
+                color: #38bdf8;
+            }
+            /* Botão */
+            button {
+                margin-top: 20px;
+                padding: 12px;
+                width:  100%;
+                border: none;
+                border-radius: 10px;
+                background: linear-gradient(45deg, #38bdf8, #6366f1);
+                color: #fff;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+            button:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 20px #38bdf8;
+            }
+            /*load screen */
+            #loading {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                background: #020617;
+                opacity: 0;
+                pointer-events: none;
+                transition: 0.5s;
+                z-index: 3;
+            }
+            .progress-bar {
+                width: 200px;
+                height: 6px;
+                background: #111;
+                margin-top: 20px;
+                overflow: hidden;
+            }
+            .progress {                
+                height: 100%;
+                width: 0%;
+                background: #111;
+                transition: width 0.3s;
+            }
+            /* Table screen */
+            #app {
+                position: absolute;
+                inset: 0;
+                padding: 40px;
+                opacity: 0;
+                pointer-events: none;
+                transition: 0.6s;
+            }
+            /*controls */
+            .controls {
+                margin-bottom: 20px;
+            }
+            select {
+                padding: 8px;
+                margin-right: 10px;
+                border-radius: 6px;
+            }
+
+            /*table */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th {
+                position: sticky;
+                top: 0;
+                background: #020617;
+            }
+            td, th {
+                padding: 10px;
+                text-align: center;
+            }
+            tr:nth-child(even) {
+                background: rgba(255, 255, 255, 0.05);
+            }
+            .true {
+                color: #22c55e;
+            }
+            .false {
+                color: #ef4444;
+            }
+
+            .fade-in {
+                animation: fade 0.5s ease;
+            }
+            @keyframes fade {
+                from { opacity: 0;transform: translateY(10px); }
+                to { opacity: 1;transform: translateY(0); }
+            }
+        </style>
+    </head>
+
+    <body>
+        <canvas id="particles"></canvas>
+
+        <div class="login-container">
+            <div class="login-inbox">
+                <h2>System Acess</h2>
+                <div class="input-group">
+                    <input type="text" required id="user">
+                    <label>Username</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" required id="pass">
+                    <label>Password</label>
+                    </div>
+
+                    <button onclick="login()">Login</button>
+            </div>
+        </div>
+              
+        <!--Loading Screen-->
+        <div id="loading">
+            <h2>Autenticando...</h2>
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+        </div>
+
+        <!--Tabela verdade-->
+        <div id="app">
+            <h1>Tabela Verdade - YUki</h1>
+            <div class="controls">
+                <label for="variables">Número de Variáveis:</label>
+                <select id="variables" onchange="generateTable()">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+        </div>
+    </body>
