@@ -1,4 +1,4 @@
-PRAGMA foreign_keys = ON;
+﻿PRAGMA foreign_keys = ON;
 
 DROP TABLE IF EXISTS USUARIOS;
 
@@ -11,7 +11,7 @@ CREATE TABLE USUARIOS (
 );
 
 -- Base com 100 registros para apresentacao da APS.
-WITH RECURSIVE sequencia(id) AS (
+WITH RECURSIVE sequenciaD(id) AS (
     SELECT 1
     UNION ALL
     SELECT id + 1
