@@ -15,7 +15,7 @@ WITH RECURSIVE sequenciaD(id) AS (
     SELECT 1
     UNION ALL
     SELECT id + 1
-    FROM sequencia
+    FROM sequenciaD
     WHERE id < 100
 )
 INSERT INTO USUARIOS (ID, NOME, SENHA1, SENHA2, EMAIL)
