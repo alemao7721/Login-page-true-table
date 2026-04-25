@@ -61,7 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
         }, 150);
-
     }
 
     function transitionToApp() {
@@ -80,40 +79,50 @@ document.addEventListener("DOMContentLoaded", () => {
     function generate() {
         const vars = parseInt(document.getElementById("vars").value);
         const op = document.getElementById("operator").value;
-        
+
         const table = document.getElementById("truthTable");
         table.innerHTML = "";
 
-        let header = {};
+        let headers = [];
         for (let i = 0; i < vars; i++) {
-            Headers.push(String.fromCharCode(65 + i));            
+            headers.push(String.fromCharCode(65 + i));
         }
-        Headers.push("Resultado");
+        headers.push("Resultado");
 
-        let thread = "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
-        table.innerHTML += thread;
+      
+        let header = "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
+        table.innerHTML += header;
 
         const rows = Math.pow(2, vars);
 
-        for (let i = 0; i < rows; i++) 
-            let value = [];
-           
+        for (let i = 0; i < rows; i++) {   
+            let values = [];               
+
             for (let j = vars - 1; j >= 0; j--) {
                 values.push((i >> j) & 1);
-            } 
+            }
 
             let result;
             switch (op) {
-                case "AND"
-                result = values.every(v => v === 1) ? 1 : 0;
-                break;
+                case "AND":
+                    result = values.every(v => v === 1) ? 1 : 0;
+                    break;
                 case "OR":
                     result = values.some(v => v === 1) ? 1 : 0;
                     break;
-                    case "XOR":
-                        result = values.reduce((a,b)=>a^b);
-                        break;
-                        case "NOT":
-                            result = values[0] ? 0 : 1;
-                            break;
+                case "XOR":
+                    result = values.reduce((a, b) => a ^ b);
+                    break;
+                case "NOT":
+                    result = values[0] ? 0 : 1;
+                    break;
             }
+
+            let row = `<tr class='fade-in'>` +
+                values.map(v => `<td>${v}</td>`).join("") +
+                `<td class="${result ? 'true' : 'false'}">${result}</td>` +
+                `</tr>`;
+            table.innerHTML += row;
+        }
+    }
+});
