@@ -95,13 +95,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const rows = Math.pow(2, vars);
 
-        for (let i = 0; i < rows; i++) {
+        for (let i = 0; i < rows; i++) 
             let value = [];
-            for (let j = 0; j < vars; j++) {
-                value.push((i >> (vars - j - 1)) & 1);
-            }
-            table.innerHTML += "<tr>" + value.map(v => `<td>${v}</td>`).join("") + "</tr>";
-        }
+           
+            for (let j = vars - 1; j >= 0; j--) {
+                values.push((i >> j) & 1);
+            } 
 
-    }
-});
+            let result;
+            switch (op) {
+                case "AND"
+                result = values.every(v => v === 1) ? 1 : 0;
+                break;
+                case "OR":
+                    result = values.some(v => v === 1) ? 1 : 0;
+                    break;
+                    case "XOR":
+                        result = values.reduce((a,b)=>a^b);
+                        break;
+                        case "NOT":
+                            result = values[0] ? 0 : 1;
+                            break;
+            }
