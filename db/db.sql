@@ -25,7 +25,7 @@ SELECT
     printf('senha%03d', id),
     printf('senha%03d', id),
     printf('usuario%03d@aps.com', id)
-FROM sequencia;
+FROM sequenciaD;
 
 -- 5 consultas para apresentar no trabalho.
 

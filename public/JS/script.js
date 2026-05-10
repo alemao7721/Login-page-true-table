@@ -37,27 +37,47 @@ document.addEventListener("DOMContentLoaded", () => {
     animate();
 
     function login() {
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
 
         if (username.length < 3 || password.length < 3) {
-            alert("Credenciais Inválidas.");
+            alert("Credenciais inválidas.");
             return;
         }
 
         document.getElementById("loading").style.opacity = 1;
-        document.getElementById("loginForm").style.pointerEvents = "all";
+        document.getElementById("loginForm").style.pointerEvents = "none";
 
         let progress = 0;
-        let bar = document.getElementById("progressBar");
+        const bar = document.getElementById("progress");
 
-        let interval = setInterval(() => {
+        const interval = setInterval(() => {
             progress += 10;
             bar.style.width = progress + "%";
 
             if (progress >= 100) {
                 clearInterval(interval);
-                alert("Login bem-sucedido!");
+
+                fetch('db/index.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ username, password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        transitionToApp();
+                    } else {
+                        document.getElementById("loading").style.opacity = 0;
+                        document.getElementById("loginForm").style.pointerEvents = "all";
+                        alert("Usuário ou senha incorretos.");
+                    }
+                })
+                .catch(() => {
+                    document.getElementById("loading").style.opacity = 0;
+                    document.getElementById("loginForm").style.pointerEvents = "all";
+                    alert("Erro ao conectar com o servidor.");
+                });
             }
 
         }, 150);
@@ -71,13 +91,13 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("loading").style.opacity = 0;
 
             const app = document.getElementById("app");
-            app.style.opacity = 0;
+            app.style.opacity = 1;
             app.style.pointerEvents = "all";
         }, 600);
     }
 
-    function generate() {
-        const vars = parseInt(document.getElementById("vars").value);
+    function generateTable() {
+        const vars = parseInt(document.getElementById("variables").value);
         const op = document.getElementById("operator").value;
 
         const table = document.getElementById("truthTable");

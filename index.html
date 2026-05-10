@@ -11,20 +11,20 @@
     <body>
         <canvas id="particles"></canvas>
 
-        <div class="login-container">
-            <div class="login-inbox">
-                <h2>System Acess</h2>
+        <div class="login-container" id="loginContainer">
+            <div class="login-inbox" id="loginForm">
+                <h2>System Access</h2>
                 <div class="input-group">
-                    <input type="text" required id="user">
+                    <input type="text" required id="username">
                     <label>Username</label>
                 </div>
 
                 <div class="input-group">
-                    <input type="password" required id="pass">
+                    <input type="password" required id="password">
                     <label>Password</label>
-                    </div>
+                </div>
 
-                    <button onclick="login()">Login</button>
+                <button onclick="login()">Login</button>
             </div>
         </div>
               
@@ -47,7 +47,17 @@
                     <option value="4">4</option>
                     <option value="5">5</option>
                 </select>
+                <label for="operator">Operador:</label>
+                <select id="operator" onchange="generateTable()">
+                    <option value="AND">AND</option>
+                    <option value="OR">OR</option>
+                    <option value="XOR">XOR</option>
+                    <option value="NOT">NOT</option>
+                </select>
+                <button type="button" onclick="generateTable()">Gerar tabela</button>
             </div>
+            <table id="truthTable"></table>
         </div>
+        <script src="../public/JS/script.js"></script>
         <script src="../public/JS/time-event.js"></script>
     </body>
