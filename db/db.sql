@@ -1,34 +1,19 @@
-﻿PRAGMA foreign_keys = ON;
-
-DROP TABLE IF EXISTS USUARIOS;
+﻿DROP TABLE IF EXISTS USUARIOS;
 
 CREATE TABLE USUARIOS (
-    ID INTEGER PRIMARY KEY,
-    NOME TEXT NOT NULL,
-    SENHA1 TEXT NOT NULL,
-    SENHA2 TEXT NOT NULL,
-    EMAIL TEXT NOT NULL UNIQUE
-);
+    ID INT NOT NULL,
+    NOME VARCHAR(100) NOT NULL,
+    SENHA1 VARCHAR(100) NOT NULL,
+    SENHA2 VARCHAR(100) NOT NULL,
+    EMAIL VARCHAR(150) NOT NULL,
+    PRIMARY KEY (ID),
+    UNIQUE KEY UK_USUARIOS_EMAIL (EMAIL)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Base com 100 registros para apresentacao da APS.
-INSERT INTO USUARIOS (ID, NOME, SENHA1, SENHA2, EMAIL)
-VALUES (1, 'Guikkio', 'APStime', 'APShome', 'guikkio@aps.com');
-
-WITH RECURSIVE sequenciaD(id) AS (
-    SELECT 2
-    UNION ALL
-    SELECT id + 1
-    FROM sequenciaD
-    WHERE id < 100
-)
-INSERT INTO USUARIOS (ID, NOME, SENHA1, SENHA2, EMAIL)
-SELECT
-    id,
-    printf('Usuario %03d', id),
-    printf('senha%03d', id),
-    printf('senha%03d', id),
-    printf('usuario%03d@aps.com', id)
-FROM sequenciaD;
+INSERT INTO USUARIOS (ID, NOME, SENHA1, SENHA2, EMAIL) VALUES
+    (1, 'Guikkio', 'APStime', 'APShome', 'guikkio@aps.com')
+;
 
 -- 5 consultas para apresentar no trabalho.
 
@@ -44,7 +29,7 @@ FROM USUARIOS
 WHERE ID <= 5
 ORDER BY ID;
 -- Resultado esperado:
--- 1 | Usuario 001 | usuario001@aps.com
+-- 1 | Guikkio | guikkio@aps.com
 -- 2 | Usuario 002 | usuario002@aps.com
 -- 3 | Usuario 003 | usuario003@aps.com
 -- 4 | Usuario 004 | usuario004@aps.com
@@ -79,7 +64,7 @@ ORDER BY ID;
 SELECT ID, NOME, EMAIL
 FROM USUARIOS
 WHERE ID BETWEEN 10 AND 20
-AND ID % 2 = 0
+  AND ID % 2 = 0
 ORDER BY ID;
 -- Resultado esperado:
 -- 10 | Usuario 010 | usuario010@aps.com

@@ -3,7 +3,7 @@ import sqlite3
 
 
 BASE_DIR = Path(__file__).resolve().parent
-SQL_FILE = BASE_DIR / "db.sql"
+SQL_FILE = BASE_DIR / "db_sqlite.sql"
 DB_FILE = BASE_DIR / "aps.sqlite"
 
 
