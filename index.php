@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+session_start();
+
 $route = $_GET['route'] ?? 'home';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
@@ -32,8 +34,18 @@ if ($route === 'login' && $method === 'POST') {
             ':pass' => $password,
         ]);
 
+        $isAuthenticated = (int) $stmt->fetchColumn() > 0;
+
+        if ($isAuthenticated) {
+            session_regenerate_id(true);
+            $_SESSION['authenticated'] = true;
+            $_SESSION['username'] = $username;
+        } else {
+            unset($_SESSION['authenticated'], $_SESSION['username']);
+        }
+
         echo json_encode([
-            'ok' => (int) $stmt->fetchColumn() > 0,
+            'ok' => $isAuthenticated,
         ]);
     } catch (PDOException $exception) {
         http_response_code(500);
@@ -43,6 +55,42 @@ if ($route === 'login' && $method === 'POST') {
         ]);
     }
 
+    exit;
+}
+
+if ($route === 'session' && $method === 'GET') {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode([
+        'ok' => true,
+        'authenticated' => !empty($_SESSION['authenticated']),
+        'username' => $_SESSION['username'] ?? null,
+    ]);
+    exit;
+}
+
+if ($route === 'logout' && $method === 'POST') {
+    header('Content-Type: application/json; charset=utf-8');
+
+    $_SESSION = [];
+
+    if (ini_get('session.use_cookies')) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(),
+            '',
+            time() - 42000,
+            $params['path'],
+            $params['domain'],
+            $params['secure'],
+            $params['httponly']
+        );
+    }
+
+    session_destroy();
+
+    echo json_encode([
+        'ok' => true,
+    ]);
     exit;
 }
 

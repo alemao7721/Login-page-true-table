@@ -114,6 +114,10 @@ button:hover {
     box-shadow: 0 12px 30px rgba(56, 189, 248, 0.25);
 }
 
+[hidden] {
+    display: none !important;
+}
+
 .login-inbox button {
     width: 100%;
     margin-top: 8px;
@@ -167,6 +171,18 @@ button:hover {
 #app h1 {
     margin-bottom: 24px;
     font-size: clamp(1.8rem, 3vw, 2.4rem);
+}
+
+.logout {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 4;
+}
+
+.logout button {
+    padding: 12px 18px;
+    font-weight: 600;
 }
 
 /* controls */
@@ -263,6 +279,11 @@ tr:nth-child(even) {
 
     #app {
         padding: 24px 16px;
+    }
+
+    .logout {
+        top: 16px;
+        right: 16px;
     }
 
     .controls {

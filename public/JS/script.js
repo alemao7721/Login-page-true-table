@@ -1,7 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
-
     const canvas = document.getElementById("particles");
     const ctx = canvas.getContext("2d");
+    const loginContainer = document.getElementById("loginContainer");
+    const loginForm = document.getElementById("loginForm");
+    const loading = document.getElementById("loading");
+    const progressBar = document.getElementById("progress");
+    const app = document.getElementById("app");
+    const logoutContainer = document.getElementById("logoutContainer");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -21,12 +28,12 @@ document.addEventListener("DOMContentLoaded", () => {
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        particles.forEach(p => {
-            p.x += p.speedX;
-            p.y += p.speedY;
+        particles.forEach((particle) => {
+            particle.x += particle.speedX;
+            particle.y += particle.speedY;
 
             ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
             ctx.fillStyle = "#38bdf8";
             ctx.fill();
         });
@@ -34,70 +41,135 @@ document.addEventListener("DOMContentLoaded", () => {
         requestAnimationFrame(animate);
     }
 
-    animate();
+    function resetLoading() {
+        loading.style.opacity = 0;
+        loading.style.pointerEvents = "none";
+        progressBar.style.width = "0%";
+        loginForm.style.pointerEvents = "all";
+    }
 
-    window.login = function login() {
-        const username = document.getElementById("username").value.trim();
-        const password = document.getElementById("password").value.trim();
+    function showLoginScreen() {
+        loginContainer.style.display = "flex";
+        loginContainer.style.opacity = 1;
+        loginContainer.style.pointerEvents = "all";
+        app.style.opacity = 0;
+        app.style.pointerEvents = "none";
+        logoutContainer.hidden = true;
+        resetLoading();
+    }
 
-        if (username.length < 3 || password.length < 3) {
-            alert("Credenciais inválidas.");
-            return;
-        }
-
-        document.getElementById("loading").style.opacity = 1;
-        document.getElementById("loginForm").style.pointerEvents = "none";
-
-        let progress = 0;
-        const bar = document.getElementById("progress");
-
-        const interval = setInterval(() => {
-            progress += 10;
-            bar.style.width = progress + "%";
-
-            if (progress >= 100) {
-                clearInterval(interval);
-
-                fetch('index.php?route=login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ username, password })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.ok) {
-                        transitionToApp();
-                    } else {
-                        document.getElementById("loading").style.opacity = 0;
-                        document.getElementById("loginForm").style.pointerEvents = "all";
-                        alert("Usuário ou senha incorretos.");
-                    }
-                })
-                .catch(() => {
-                    document.getElementById("loading").style.opacity = 0;
-                    document.getElementById("loginForm").style.pointerEvents = "all";
-                    alert("Erro ao conectar com o servidor.");
-                });
-            }
-
-        }, 150);
-    };
-
-    function transitionToApp() {
-        document.getElementById("loginContainer").style.opacity = 0;
+    function showAppScreen() {
+        loginContainer.style.opacity = 0;
+        loginContainer.style.pointerEvents = "none";
 
         setTimeout(() => {
-            document.getElementById("loginContainer").style.display = "none";
-            document.getElementById("loading").style.opacity = 0;
-
-            const app = document.getElementById("app");
+            loginContainer.style.display = "none";
             app.style.opacity = 1;
             app.style.pointerEvents = "all";
+            logoutContainer.hidden = false;
+            resetLoading();
         }, 600);
     }
 
+    function startLoading() {
+        loading.style.opacity = 1;
+        loading.style.pointerEvents = "all";
+        loginForm.style.pointerEvents = "none";
+        progressBar.style.width = "0%";
+    }
+
+    async function checkSession() {
+        try {
+            const response = await fetch("index.php?route=session", {
+                method: "GET"
+            });
+
+            if (!response.ok) {
+                showLoginScreen();
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data.authenticated) {
+                showAppScreen();
+                return;
+            }
+
+            showLoginScreen();
+        } catch (error) {
+            showLoginScreen();
+        }
+    }
+
+    animate();
+    checkSession();
+
+    window.login = function login() {
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        if (username.length < 3 || password.length < 3) {
+            alert("Credenciais invalidas.");
+            return;
+        }
+
+        startLoading();
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 10;
+            progressBar.style.width = progress + "%";
+
+            if (progress < 100) {
+                return;
+            }
+
+            clearInterval(interval);
+
+            fetch("index.php?route=login", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ username, password })
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.ok) {
+                        showAppScreen();
+                        return;
+                    }
+
+                    resetLoading();
+                    alert("Usuario ou senha incorretos.");
+                })
+                .catch(() => {
+                    resetLoading();
+                    alert("Erro ao conectar com o servidor.");
+                });
+        }, 150);
+    };
+
+    window.logout = function logout() {
+        fetch("index.php?route=logout", {
+            method: "POST"
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (!data.ok) {
+                    throw new Error("logout_failed");
+                }
+
+                usernameInput.value = "";
+                passwordInput.value = "";
+                showLoginScreen();
+            })
+            .catch(() => {
+                alert("Nao foi possivel encerrar a sessao.");
+            });
+    };
+
     window.generateTable = function generateTable() {
-        const vars = parseInt(document.getElementById("variables").value);
+        const vars = parseInt(document.getElementById("variables").value, 10);
         const op = document.getElementById("operator").value;
 
         const table = document.getElementById("truthTable");
@@ -109,14 +181,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         headers.push("Resultado");
 
-      
-        let header = "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
+        let header = "<tr>" + headers.map((title) => `<th>${title}</th>`).join("") + "</tr>";
         table.innerHTML += header;
 
         const rows = Math.pow(2, vars);
 
-        for (let i = 0; i < rows; i++) {   
-            let values = [];               
+        for (let i = 0; i < rows; i++) {
+            let values = [];
 
             for (let j = vars - 1; j >= 0; j--) {
                 values.push((i >> j) & 1);
@@ -125,23 +196,23 @@ document.addEventListener("DOMContentLoaded", () => {
             let result;
             switch (op) {
                 case "AND":
-                    result = values.every(v => v === 1) ? 1 : 0;
+                    result = values.every((value) => value === 1) ? 1 : 0;
                     break;
                 case "OR":
-                    result = values.some(v => v === 1) ? 1 : 0;
+                    result = values.some((value) => value === 1) ? 1 : 0;
                     break;
                 case "XOR":
-                    result = values.reduce((a, b) => a ^ b);
+                    result = values.reduce((left, right) => left ^ right);
                     break;
                 case "NOT":
                     result = values[0] ? 0 : 1;
                     break;
             }
 
-            let row = `<tr class='fade-in'>` +
-                values.map(v => `<td>${v}</td>`).join("") +
-                `<td class="${result ? 'true' : 'false'}">${result}</td>` +
-                `</tr>`;
+            let row = "<tr class='fade-in'>" +
+                values.map((value) => `<td>${value}</td>`).join("") +
+                `<td class="${result ? "true" : "false"}">${result}</td>` +
+                "</tr>";
             table.innerHTML += row;
         }
     };
