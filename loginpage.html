@@ -1,63 +1,191 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>APS Lógica - Tabela verdade</title>
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>   
-        <link rel="stylesheet" href="public/css/style.css">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APS Fake News e IA</title>
 
-    <body>
-        <canvas id="particles"></canvas>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="public/css/style.css">
+</head>
 
-        <div class="login-container" id="loginContainer">
-            <div class="login-inbox" id="loginForm">
-                <h2>System Access</h2>
-                <div class="input-group">
-                    <input type="text" required id="username">
-                    <label>Username</label>
+<body class="no-scroll">
+    <canvas id="particles"></canvas>
+
+    <!-- LOGIN -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-inbox" id="loginForm">
+            <h2>Fake News Monitoring System</h2>
+
+            <div class="input-group">
+                <input type="text" required id="username">
+                <label>Username</label>
+            </div>
+
+            <div class="input-group">
+                <input type="password" required id="password">
+                <label>Password</label>
+            </div>
+
+            <button onclick="login()">Login</button>
+
+        </div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading">
+        <h2>Autenticando...</h2>
+
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="app">
+        <div class="logout">
+            <button onclick="logout()">Logout</button>
+        </div>
+        <h1>Dashboard - Fake News e IA</h1>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="dashboard" onclick="switchTab('dashboard')">Painel Principal</button>
+            <button class="tab-button" data-tab="latest" onclick="switchTab('latest')">Últimas Fake News</button>
+            <button class="tab-button" data-tab="records" onclick="switchTab('records')">Registros do Banco</button>
+        </div>
+
+        <div id="dashboardTab" class="tab-content active">
+            <div class="dashboard-grid">
+
+                <div class="card">
+                    <h3>Total de Noticias</h3>
+                    <p>100 registros cadastrados</p>
                 </div>
 
-                <div class="input-group">
-                    <input type="password" required id="password">
-                    <label>Password</label>
+                <div class="card">
+                    <h3>Noticias com IA</h3>
+                    <p>50 registros identificados</p>
                 </div>
 
-                <button onclick="login()">Login</button>
-            </div>
-        </div>
-              
-        <!--Loading Screen-->
-        <div id="loading">
-            <h2>Autenticando...</h2>
-            <div class="progress-bar">
-                <div class="progress" id="progress"></div>
-            </div>
-        </div>
+                <div class="card">
+                    <h3>Plataforma com mais casos</h3>
+                    <p>Facebook</p>
+                </div>
 
-        <!--Tabela verdade-->
-        <div id="app">
-            <h1>Tabela Verdade - APS Lógica</h1>
+                <div class="card">
+                    <h3>Periodo analisado</h3>
+                    <p>2016 - 2026</p>
+                </div>
+
+            </div>
+
             <div class="controls">
-                <label for="variables">Número de Variáveis:</label>
-                <select id="variables" onchange="generateTable()">
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-                <label for="operator">Operador:</label>
-                <select id="operator" onchange="generateTable()">
-                    <option value="AND">AND</option>
-                    <option value="OR">OR</option>
-                    <option value="XOR">XOR</option>
-                    <option value="NOT">NOT</option>
-                </select>
-                <button type="button" onclick="generateTable()">Gerar tabela</button>
+                <button onclick="consulta1()">Plataformas com mais Fake News</button>
+                <button onclick="consulta2()">Fake News recentes</button>
+                <button onclick="consulta3()">5 Fake News antigas com IA</button>
+                <button onclick="consulta4()">Noticias com Deepfake</button>
+                <button onclick="consulta5()">Fake News com IA por ano</button>
             </div>
-            <table id="truthTable"></table>
+
+            <div id="resultadoConsulta"></div>
         </div>
-        <script src="public/JS/script.js"></script>
-        <script src="public/JS/time-event.js"></script>
-    </body>
+
+        <div id="latestTab" class="tab-content">
+            <div class="table-container">
+                <h2>Últimas Fake News Registradas</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>                            <th>Data</th>                            <th>Titulo</th>
+                            <th>IA</th>
+                            <th>Plataforma</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>79</td>
+                            <td>Deepfake de politico em debate</td>
+                            <td>SIM</td>
+                            <td>YouTube</td>
+                        </tr>
+
+                        <tr>
+                            <td>91</td>
+                            <td>Deepfake de ator promovendo investimento</td>
+                            <td>SIM</td>
+                            <td>YouTube</td>
+                        </tr>
+
+                        <tr>
+                            <td>97</td>
+                            <td>Deepfake de jornalista internacional</td>
+                            <td>SIM</td>
+                            <td>YouTube</td>
+                        </tr>
+
+                        <tr>
+                            <td>99</td>
+                            <td>Imagem falsa de desastre climatico</td>
+                            <td>SIM</td>
+                            <td>Instagram</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="recordsTab" class="tab-content">
+            <div class="table-container">
+                <div class="records-header">
+                    <h2>100 Registros do Banco de Dados</h2>
+                    <button type="button" id="toggleFiltersBtn" onclick="toggleRecordFilters()">Mostrar filtros</button>
+                </div>
+
+                <div class="records-filters collapsed" id="recordsFilters">
+                    <div class="filter-group">
+                        <label for="filterStartDate">Data início</label>
+                        <input type="date" id="filterStartDate" min="2015-01-01" max="2026-12-31">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterEndDate">Data fim</label>
+                        <input type="date" id="filterEndDate" min="2015-01-01" max="2026-12-31">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterIA">IA</label>
+                        <select id="filterIA" multiple size="2">
+                            <option value="SIM" selected>SIM</option>
+                            <option value="NAO" selected>NÃO</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterPlatform">Plataforma</label>
+                        <select id="filterPlatform" multiple size="5"></select>
+                    </div>
+                    <div class="filter-actions">
+                        <button type="button" onclick="resetRecordFilters()">Limpar filtros</button>
+                    </div>
+                </div>
+
+                <div class="records-table-wrapper">
+                    <table id="recordsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Data</th>
+                                <th>Título</th>
+                                <th>IA</th>
+                                <th>Plataforma</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="public/JS/script.js"></script>
+</body>
+</html>
